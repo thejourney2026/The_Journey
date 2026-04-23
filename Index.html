@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journey to Hope - An Immigrant's Story</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background stars/particles */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .background-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Main container */
+        .game-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 900px;
+            width: 100%;
+            padding: 0;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .game-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Character Selection Screen */
+        .character-selection {
+            padding: 40px;
+        }
+
+        .character-selection h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .character-card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .character-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .character-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .character-origin {
+            color: #666;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .character-story {
+            color: #888;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* Packing Scene */
+        .packing-scene {
+            padding: 40px;
+        }
+
+        .packing-instructions {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .packing-instructions h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .bag-display {
+            background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 150px;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .bag-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .packed-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .packed-item {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .item-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+        }
+
+        .item-card:hover:not(.item-selected):not(.item-disabled) {
+            transform: scale(1.05);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .item-card.item-selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .item-card.item-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .item-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .item-weight {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .weight-tracker {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .weight-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .weight-fill {
+            background: linear-gradient(90deg, #10b981 0%, #fbbf24 50%, #ef4444 100%);
+            height: 100%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Game Content */
+        .game-content {
+            padding: 40px;
+        }
+
+        .resources {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .resource {
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .resource-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .resource-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .character-info {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .character-avatar {
+            font-size: 3em;
+        }
+
+        .character-details {
+            flex: 1;
+        }
+
+        .character-details strong {
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        /* Story text with animations */
+        .story-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 30px;
+            min-height: 120px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 25px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-button::before {
+            content: '→';
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%) translateX(10px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .choice-button:hover::before {
+            transform: translateY(-50%) translateX(0);
+            opacity: 1;
+        }
+
+        .choice-button:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .choice-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .continue-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            transition: all 0.3s;
+        }
+
+        .continue-button:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.3em;
+            border-radius: 12px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            transition: all 0.3s;
+        }
+
+        .restart-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Inventory display */
+        .inventory-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .inventory-display h4 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .inventory-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .inventory-item {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Transition screen */
+        .transition-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .transition-content {
+            text-align: center;
+            color: white;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .transition-text {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .journey-animation {
+            width: 400px;
+            height: 200px;
+            position: relative;
+            margin: 30px auto;
+            background: linear-gradient(to bottom, #87CEEB 0%, #DEB887 70%, #8B7355 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .traveler {
+            position: absolute;
+            bottom: 60px;
+            left: -50px;
+            font-size: 3em;
+            animation: walk 3s linear forwards;
+        }
+
+        @keyframes walk {
+            0% { left: -50px; }
+            100% { left: calc(100% + 50px); }
+        }
+
+        .sun {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #FFD700;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+            opacity: 0.8;
+            animation: float-cloud 4s linear infinite;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+        }
+
+        .cloud1 {
+            width: 60px;
+            height: 20px;
+            top: 30px;
+            left: -100px;
+        }
+
+        .cloud1::before {
+            width: 40px;
+            height: 20px;
+            top: -10px;
+            left: 10px;
+        }
+
+        .cloud1::after {
+            width: 30px;
+            height: 15px;
+            top: -5px;
+            left: 30px;
+        }
+
+        @keyframes float-cloud {
+            from { transform: translateX(0); }
+            to { transform: translateX(500px); }
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        /* Detention/Jail Screen */
+        .detention-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .detention-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .spotlight {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .detained-character {
+            font-size: 8em;
+            position: relative;
+            z-index: 1;
+            filter: grayscale(100%);
+            animation: subtle-sway 3s ease-in-out infinite;
+        }
+
+        @keyframes subtle-sway {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .detention-text {
+            color: #999;
+            font-size: 1.8em;
+            margin-top: 30px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .detention-bars {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .bar {
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to bottom, #333 0%, #666 50%, #333 100%);
+            opacity: 0.6;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* Ransom/Hostage Screen */
+        .ransom-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .ransom-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .danger-light {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,0,0,0.2) 0%, rgba(255,0,0,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-danger 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .hostage-character {
+            font-size: 8em;
+            position: relative;
+            z-index: 1;
+            filter: grayscale(50%);
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        .ransom-text {
+            color: #ff6666;
+            font-size: 1.8em;
+            margin-top: 30px;
+            max-width: 600px;
+            line-height: 1.6;
+            text-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+
+        .continue-btn {
+            background: #666;
+            color: white;
+            border: 2px solid #999;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s;
+        }
+
+        .continue-btn:hover {
+            background: #888;
+            border-color: #bbb;
+        }
+
+        /* Context/Statistics Screen */
+        .context-screen {
+            padding: 40px;
+            display: none;
+        }
+
+        .context-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .context-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .context-subtitle {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .context-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .danger-list {
+            background: #fff3cd;
+            border-left: 4px solid #ff6b6b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .danger-list h3 {
+            color: #d9534f;
+            margin-bottom: 15px;
+        }
+
+        .danger-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .danger-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .danger-list li:before {
+            content: '⚠️';
+            position: absolute;
+            left: 0;
+        }
+
+        .stats-screen {
+            padding: 40px;
+            display: none;
+        }
+
+        .stats-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .stats-title {
+            font-size: 2.2em;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stats-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 40px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .stat-source {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .reflection-text {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #333;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .game-content {
+                padding: 20px;
+            }
+
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="background-animation" id="particles"></div>
+
+    <!-- Transition screen -->
+    <div class="transition-screen" id="transition-screen">
+        <div class="transition-content">
+            <div class="transition-text" id="transition-text"></div>
+            <div class="journey-animation">
+                <div class="sun"></div>
+                <div class="cloud cloud1"></div>
+                <div class="traveler" id="traveler-icon">🚶</div>
+            </div>
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detention/Jail Screen -->
+    <div class="detention-screen" id="detention-screen">
+        <div class="detention-bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="detention-content">
+            <div class="spotlight"></div>
+            <div class="detained-character" id="detained-character">👤</div>
+            <div class="detention-text" id="detention-text"></div>
+            <button class="continue-btn" id="detention-continue" onclick="hideDetention()">Continue →</button>
+        </div>
+    </div>
+
+    <!-- Ransom/Hostage Screen -->
+    <div class="ransom-screen" id="ransom-screen">
+        <div class="ransom-content">
+            <div class="danger-light"></div>
+            <div class="hostage-character" id="hostage-character">👤</div>
+            <div class="ransom-text" id="ransom-text"></div>
+            <button class="continue-btn" id="ransom-continue" onclick="hideRansom()">Continue →</button>
+        </div>
+    </div>
+
+    <div class="game-wrapper">
+        <div class="game-container">
+            <div class="game-header">
+                <h1>🌍 Journey to Hope</h1>
+                <div class="subtitle">Every journey tells a story</div>
+            </div>
+
+            <!-- Context Screen (Why they must leave) -->
+            <div id="context-screen" class="context-screen">
+                <div class="context-content">
+                    <div class="context-title" id="context-title"></div>
+                    <div class="context-subtitle" id="context-subtitle"></div>
+                    <div class="context-text" id="context-text"></div>
+                    <div class="danger-list" id="danger-list">
+                        <h3>The Reality You Face:</h3>
+                        <ul id="danger-items"></ul>
+                    </div>
+                    <div class="context-text" id="context-conclusion"></div>
+                    <button class="continue-button" onclick="showPackingFromContext()">Continue to Packing →</button>
+                </div>
+            </div>
+
+            <!-- Statistics Screen (End of game) -->
+            <div id="stats-screen" class="stats-screen">
+                <div class="stats-content">
+                    <div class="stats-title">The Reality of Migration</div>
+                    <div class="stats-subtitle">You played one story. Here are the real numbers.</div>
+
+                    <div class="stat-box">
+                        <div class="stat-number">853</div>
+                        <div class="stat-label">Migrants died crossing the US-Mexico border in 2022</div>
+                        <div class="stat-source">Source: International Organization for Migration</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-number">3,000+</div>
+                        <div class="stat-label">People die annually trying to cross the Mediterranean to Europe</div>
+                        <div class="stat-source">Source: UNHCR</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-number">110 Million</div>
+                        <div class="stat-label">Forcibly displaced people worldwide (refugees, asylum seekers, internally displaced)</div>
+                        <div class="stat-source">Source: UNHCR Global Trends Report 2023</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-number">68%</div>
+                        <div class="stat-label">Of migrants report experiencing violence or abuse during their journey</div>
+                        <div class="stat-source">Source: Doctors Without Borders survey</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-number">2-5 Years</div>
+                        <div class="stat-label">Average wait time for asylum cases in US immigration courts</div>
+                        <div class="stat-source">Source: TRAC Immigration</div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-number">31%</div>
+                        <div class="stat-label">Asylum approval rate in the United States (2022)</div>
+                        <div class="stat-source">Source: Department of Justice</div>
+                    </div>
+
+                    <div class="reflection-text">
+                        The game you just played represents one fictional journey among millions of real ones. Every year, people flee violence, persecution, war, and poverty - not because migration is easy, but because staying means death, suffering, or hopelessness.
+                        <br><br>
+                        The choices in this game were difficult. The real choices are even harder. Behind every statistic is a human being with a story, a family, and dreams of safety and opportunity.
+                        <br><br>
+                        <strong>What you can do:</strong> Support organizations that help migrants, advocate for humane immigration policies, and remember that behind the political debates are real people making impossible choices to survive.
+                    </div>
+
+                    <button class="restart-button" onclick="location.reload()">Play Another Story</button>
+                </div>
+            </div>
+
+            <!-- Character Selection Screen -->
+            <div id="character-selection" class="character-selection" style="display: block;">
+                <h2>Choose Your Journey</h2>
+                <div class="character-grid">
+                    <div class="character-card" onclick="selectCharacter('maria')">
+                        <div class="character-icon">👩‍🌾</div>
+                        <div class="character-name">María</div>
+                        <div class="character-origin">From Mexico</div>
+                        <div class="character-story">A farmer fleeing cartel violence, seeking safety for her children.</div>
+                    </div>
+
+                    <div class="character-card" onclick="selectCharacter('jean')">
+                        <div class="character-icon">👨‍⚕️</div>
+                        <div class="character-name">Jean</div>
+                        <div class="character-origin">From Haiti</div>
+                        <div class="character-story">A nurse escaping political turmoil, hoping to reunite with family.</div>
+                    </div>
+
+                    <div class="character-card" onclick="selectCharacter('fatima')">
+                        <div class="character-icon">👩‍🎓</div>
+                        <div class="character-name">Fatima</div>
+                        <div class="character-origin">From Syria</div>
+                        <div class="character-story">A teacher fleeing war, carrying her family's hopes.</div>
+                    </div>
+
+                    <div class="character-card" onclick="selectCharacter('amir')">
+                        <div class="character-icon">👨‍💼</div>
+                        <div class="character-name">Amir</div>
+                        <div class="character-origin">From Sudan</div>
+                        <div class="character-story">An engineer escaping conflict, seeking a peaceful future.</div>
+                    </div>
+
+                    <div class="character-card" onclick="selectCharacter('linh')">
+                        <div class="character-icon">👩‍🍳</div>
+                        <div class="character-name">Linh</div>
+                        <div class="character-origin">From Vietnam</div>
+                        <div class="character-story">A chef fleeing political persecution, hoping to reunite with family in California.</div>
+                    </div>
+
+                    <div class="character-card" onclick="selectCharacter('carlos')">
+                        <div class="character-icon">👨‍🌾</div>
+                        <div class="character-name">Carlos</div>
+                        <div class="character-origin">From Ecuador</div>
+                        <div class="character-story">A farmer escaping economic collapse, seeking opportunity in the US.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packing Scene -->
+            <div id="packing-scene" class="packing-scene" style="display: none;">
+                <div class="packing-instructions">
+                    <h3>📦 Pack Your Bag</h3>
+                    <p id="packing-context"></p>
+                    <p><strong>You can only carry 6kg.</strong> Choose wisely - what you bring may save your life.</p>
+                </div>
+
+                <div class="weight-tracker">
+                    <div>Weight: <strong><span id="current-weight">0</span> / 6 kg</strong></div>
+                    <div class="weight-bar">
+                        <div class="weight-fill" id="weight-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="bag-display">
+                    <div class="bag-title">🎒 Your Bag</div>
+                    <div class="packed-items" id="packed-items">
+                        <div style="color: rgba(255,255,255,0.5); text-align: center; width: 100%;">Empty - Click items below to pack</div>
+                    </div>
+                </div>
+
+                <div class="items-grid" id="items-grid"></div>
+
+                <button class="continue-button" onclick="finishPacking()" id="pack-continue" disabled>Continue Journey →</button>
+            </div>
+
+            <!-- Main Game -->
+            <div id="game-content" class="game-content" style="display: none;">
+                <div class="character-info" id="character-info"></div>
+
+                <div class="resources">
+                    <div class="resource">
+                        <div class="resource-label">💰 Money</div>
+                        <div class="resource-value" id="money">$0</div>
+                    </div>
+                    <div class="resource">
+                        <div class="resource-label">❤️ Health</div>
+                        <div class="resource-value" id="health">100%</div>
+                    </div>
+                    <div class="resource">
+                        <div class="resource-label">✨ Hope</div>
+                        <div class="resource-value" id="hope">100%</div>
+                    </div>
+                </div>
+
+                <div class="inventory-display" id="inventory-display" style="display: none;">
+                    <h4>🎒 Your Items:</h4>
+                    <div class="inventory-items" id="inventory-items"></div>
+                </div>
+
+                <div class="story-text" id="story-text"></div>
+                <div class="choices" id="choices"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // GAME STATE
+        let gameState = {
+            character: null,
+            money: 0,
+            health: 100,
+            hope: 100,
+            currentScene: '',
+            inventory: [],
+            decisions: []
+        };
+
+        // CHARACTER DATA
+        const characters = {
+            maria: {
+                name: 'María',
+                icon: '👩‍🌾',
+                origin: 'Oaxaca, Mexico',
+                startMoney: 500,
+                context: 'You are María, a farmer from Oaxaca. The cartel has threatened your family. You must leave everything behind.',
+                packingContext: 'You have a small backpack. Choose what to bring from your home.',
+                startScene: 'maria_start',
+                contextData: {
+                    title: "Why María Must Leave",
+                    subtitle: "Oaxaca, Mexico - 2024",
+                    text: "You are María, 34 years old. You've worked the same plot of land your entire life, growing corn and beans like your parents and grandparents before you. You have three children: Diego (12), Sofia (9), and little Carmen (4).\n\nTwo weeks ago, men from the cartel came to your farm. They demanded you pay them 'protection money' - 5,000 pesos every month. You don't have that kind of money. When you said no, they killed your neighbor as a warning. They spray-painted your door: 'Pay or die.'",
+                    dangers: [
+                        "Drug cartels control much of rural Oaxaca, extorting farmers and business owners",
+                        "Those who refuse to pay 'protection money' are murdered, often publicly as warnings",
+                        "In 2023, Mexico recorded over 30,000 homicides, many cartel-related",
+                        "Police are often corrupt or powerless to help - some work for the cartels",
+                        "Your children cannot go to school safely; the cartels recruit children",
+                        "Staying means certain death or forced participation in criminal activities"
+                    ],
+                    conclusion: "This is not a choice. This is survival. You must leave everything you've ever known to save your children's lives."
+                }
+            },
+            jean: {
+                name: 'Jean',
+                icon: '👨‍⚕️',
+                origin: 'Port-au-Prince, Haiti',
+                startMoney: 300,
+                context: 'You are Jean, a nurse. Political violence has made Haiti too dangerous. Your brother is already in the US.',
+                packingContext: 'You have limited space. Choose carefully what to take on this long journey.',
+                startScene: 'jean_start',
+                contextData: {
+                    title: "Why Jean Must Leave",
+                    subtitle: "Port-au-Prince, Haiti - 2024",
+                    text: "You are Jean, a 28-year-old nurse. You work at a public hospital in Port-au-Prince. Every day, you treat gunshot wounds. Mostly young people. Mostly gang violence.\n\nLast month, a gang attacked your hospital, stealing medications and equipment. They shot two doctors who tried to stop them. Yesterday, they came back. This time they asked for you by name - they want you to work for them, treating their wounded fighters. If you refuse, they'll kill you. If you accept, you become part of their violence.",
+                    dangers: [
+                        "Armed gangs control 80% of Port-au-Prince, the capital city",
+                        "Over 8,000 people were killed or injured in gang violence in 2023",
+                        "Kidnapping is rampant - even doctors and nurses are targeted",
+                        "Government has collapsed; police are overwhelmed and outgunned",
+                        "Hospitals regularly attacked; medical staff forced to work for gangs or flee",
+                        "Food and fuel shortages make daily survival a struggle",
+                        "Cholera outbreak killed thousands with limited medical resources"
+                    ],
+                    conclusion: "Your medical skills make you valuable to violent gangs. Staying means becoming part of the violence that destroys your country, or being killed for refusing. Your brother escaped to Florida two years ago. He's sent you money for the journey. It's time to go."
+                }
+            },
+            fatima: {
+                name: 'Fatima',
+                icon: '👩‍🎓',
+                origin: 'Aleppo, Syria',
+                startMoney: 800,
+                context: 'You are Fatima, a teacher. War has destroyed your city. You carry documents for refugee resettlement.',
+                packingContext: 'You have fled before. You know every item must serve a purpose.',
+                startScene: 'fatima_start',
+                contextData: {
+                    title: "Why Fatima Must Leave",
+                    subtitle: "Istanbul, Turkey (Originally from Aleppo, Syria) - 2024",
+                    text: "You are Fatima, 31 years old. You were a teacher in Aleppo, Syria. You taught literature and poetry to high school students. That was before the war.\n\nYour school was bombed in 2016. Seventeen of your students died. You fled to Turkey with thousands of other Syrian refugees. For two years, you've lived in Istanbul, working illegally in a textile factory for $2 an hour. But now Turkey is turning against refugees. There are violent attacks against Syrians in the streets. The government is forcing refugees back to Syria - back to the war.",
+                    dangers: [
+                        "13+ years of civil war in Syria; over 500,000 dead",
+                        "Chemical weapons used against civilians; entire cities destroyed",
+                        "Assad regime targets schools, hospitals, and civilian infrastructure",
+                        "Return to Syria means forced military conscription or persecution",
+                        "In Turkey: rising anti-refugee violence and hate crimes",
+                        "Turkish government forcibly deporting Syrians back to war zones",
+                        "Refugees face exploitation, poverty, and no legal protection",
+                        "No path to citizenship or permanent safety in Turkey"
+                    ],
+                    conclusion: "You cannot go back to Syria - there is nothing left but rubble and death. You cannot stay in Turkey - the hostility grows more dangerous every day. You have documents for US refugee resettlement, but the process has stalled for years. You can't wait any longer. You must find another way to safety."
+                }
+            },
+            amir: {
+                name: 'Amir',
+                icon: '👨‍💼',
+                origin: 'Khartoum, Sudan',
+                startMoney: 600,
+                context: 'You are Amir, an engineer. Civil war has torn your country apart. You must find safety.',
+                packingContext: 'Your journey will be long. Choose what you can carry.',
+                startScene: 'amir_start',
+                contextData: {
+                    title: "Why Amir Must Leave",
+                    subtitle: "Khartoum, Sudan - 2024",
+                    text: "You are Amir, 35 years old, a civil engineer. You designed water systems and infrastructure in Khartoum. You helped build schools and hospitals. You were proud of your work.\n\nIn April 2023, civil war erupted. The Sudanese Armed Forces and the Rapid Support Forces turned Khartoum into a battlefield. You watched the buildings you designed get destroyed. Your university colleagues have been killed, imprisoned, or forced to flee. Last week, fighters came to your home demanding you help them build fortifications. When you refused, they beat you and threatened to return.",
+                    dangers: [
+                        "Civil war since April 2023; over 13,000 killed, millions displaced",
+                        "Khartoum, the capital, is an active war zone with daily fighting",
+                        "Widespread ethnic violence and targeted killings",
+                        "Professional educated people targeted for forced conscription",
+                        "Collapse of healthcare, water, electricity, and food systems",
+                        "Systematic looting, assault, and human rights violations",
+                        "Both military factions commit atrocities against civilians",
+                        "No functioning government or rule of law"
+                    ],
+                    conclusion: "Your engineering degree makes you valuable to whoever controls you - they want you to build their war infrastructure. You've already lost everything: your career, your home, your country. Staying means being forced to help destroy what you spent your life building. You must leave before they come back."
+                }
+            },
+            linh: {
+                name: 'Linh',
+                icon: '👩‍🍳',
+                origin: 'Ho Chi Minh City, Vietnam',
+                startMoney: 400,
+                context: 'You are Linh, a chef. Political persecution has made Vietnam unsafe for you. Your cousin is in California.',
+                packingContext: 'You are leaving everything behind. Pack carefully.',
+                startScene: 'linh_start',
+                contextData: {
+                    title: "Why Linh Must Leave",
+                    subtitle: "Ho Chi Minh City, Vietnam - 2024",
+                    text: "You are Linh, 29 years old, a chef who runs a small restaurant. You're also a blogger. You write about food, but also about corruption, about police brutality, about the government crackdown on freedom of speech.\n\nThree days ago, the police came to your restaurant. They arrested you, held you for 48 hours, and 'warned' you to stop blogging. They showed you photos of other bloggers who disappeared. Yesterday, your blog was shut down. This morning, you received a threatening message: 'Stop or disappear.' You know what disappear means. Several of your fellow activists have vanished. One was found dead.",
+                    dangers: [
+                        "Vietnam's Communist government imprisons hundreds of activists and bloggers",
+                        "No freedom of speech, press, or peaceful assembly",
+                        "Political prisoners face torture, long sentences without fair trials",
+                        "'Disappearances' and suspicious deaths of activists common",
+                        "Cybersecurity Law allows government to monitor all online activity",
+                        "Families of dissidents are harassed, fired from jobs, children expelled from schools",
+                        "Average prison sentence for 'anti-state propaganda': 10-15 years",
+                        "International human rights organizations have no access to prisoners"
+                    ],
+                    conclusion: "You spoke the truth about your government. In Vietnam, that's a crime punishable by prison, torture, or death. Your cousin in California has sent money to help you escape. If you stay, you will be arrested again - and this time, you won't be released. You must leave now, before they come back."
+                }
+            },
+            carlos: {
+                name: 'Carlos',
+                icon: '👨‍🌾',
+                origin: 'Quito, Ecuador',
+                startMoney: 350,
+                context: 'You are Carlos, a farmer. Economic collapse has destroyed your livelihood. You must seek opportunity in the US.',
+                packingContext: 'The journey north is long and uncertain. Choose wisely.',
+                startScene: 'carlos_start',
+                contextData: {
+                    title: "Why Carlos Must Leave",
+                    subtitle: "Rural Ecuador (near Quito) - 2024",
+                    text: "You are Carlos, 38 years old, a farmer. You grow coffee, corn, and vegetables on your small plot of land. You have a wife, Elena, and three children: Maria (14), Pedro (11), and little José (6).\n\nEcuador's economy has collapsed. Inflation is out of control - the price of everything has tripled in two years. The coffee you grow barely sells, and when it does, the money buys almost nothing. You can't afford food for your children. Maria dropped out of school to work. Pedro is sick but you can't afford medicine. Last week, your family ate only rice and beans. This week, you're running out of rice.",
+                    dangers: [
+                        "Ecuador's economy in crisis; 36% poverty rate, rising to 50% in rural areas",
+                        "Food insecurity affects millions; children suffering from malnutrition",
+                        "No jobs available; unemployment over 40% in rural regions",
+                        "Rising crime and violence as people become desperate",
+                        "Healthcare system collapsing; no access to medicine or doctors",
+                        "Families forced to choose which children eat each day",
+                        "Suicide rates among farmers rising as debts become impossible",
+                        "No government assistance or social safety net"
+                    ],
+                    conclusion: "You are not fleeing violence with guns. You are fleeing violence of hunger, of watching your children starve, of having no future. This is economic collapse. Staying means watching your family slowly suffer and die from poverty. You've heard of work in the United States - hard work, but work that pays enough to feed your family. This is not about wanting more. This is about survival."
+                }
+            }
+        };
+
+        // PACKING ITEMS
+        const packingItems = {
+            maria: [
+                { id: 'water', name: 'Water Bottles', icon: '💧', weight: 2, effect: { health: 10 } },
+                { id: 'food', name: 'Dried Food', icon: '🌾', weight: 1.5, effect: { health: 5 } },
+                { id: 'blanket', name: 'Blanket', icon: '🧣', weight: 2, effect: { health: 10 } },
+                { id: 'photo', name: 'Family Photo', icon: '📷', weight: 0.5, effect: { hope: 15 } },
+                { id: 'medicine', name: 'Medicine', icon: '💊', weight: 1, effect: { health: 20 } },
+                { id: 'money_hidden', name: 'Hidden Cash', icon: '💵', weight: 0.5, effect: { money: 200 } },
+                { id: 'map', name: 'Map', icon: '🗺️', weight: 0.5, effect: { } },
+                { id: 'phone', name: 'Phone & Charger', icon: '📱', weight: 1, effect: { } },
+                { id: 'documents', name: 'ID Documents', icon: '📄', weight: 0.5, effect: { } },
+                { id: 'knife', name: 'Pocket Knife', icon: '🔪', weight: 0.5, effect: { } },
+                { id: 'rosary', name: 'Rosary Beads', icon: '📿', weight: 0.5, effect: { hope: 10 } },
+                { id: 'jacket', name: 'Warm Jacket', icon: '🧥', weight: 2, effect: { health: 10 } }
+            ],
+            jean: [
+                { id: 'water', name: 'Water Bottles', icon: '💧', weight: 2, effect: { health: 10 } },
+                { id: 'food', name: 'Canned Food', icon: '🥫', weight: 2, effect: { health: 5 } },
+                { id: 'medical_kit', name: 'Medical Kit', icon: '⚕️', weight: 2, effect: { health: 25 } },
+                { id: 'photo', name: 'Family Photo', icon: '📷', weight: 0.5, effect: { hope: 15 } },
+                { id: 'documents', name: 'Passport', icon: '📘', weight: 0.5, effect: { } },
+                { id: 'money_belt', name: 'Money Belt', icon: '💰', weight: 0.5, effect: { money: 100 } },
+                { id: 'phone', name: 'Phone', icon: '📱', weight: 1, effect: { } },
+                { id: 'bible', name: 'Bible', icon: '📖', weight: 1.5, effect: { hope: 15 } },
+                { id: 'blanket', name: 'Small Blanket', icon: '🧣', weight: 2, effect: { health: 10 } },
+                { id: 'flashlight', name: 'Flashlight', icon: '🔦', weight: 1, effect: { } },
+                { id: 'brother_address', name: "Brother's Address", icon: '✉️', weight: 0.5, effect: { hope: 10 } }
+            ],
+            fatima: [
+                { id: 'water', name: 'Water', icon: '💧', weight: 2, effect: { health: 10 } },
+                { id: 'food', name: 'Dried Food', icon: '🥖', weight: 1.5, effect: { health: 5 } },
+                { id: 'documents', name: 'Refugee Papers', icon: '📋', weight: 0.5, effect: { } },
+                { id: 'money_sewn', name: 'Money (sewn in clothes)', icon: '💵', weight: 0.5, effect: { money: 300 } },
+                { id: 'medicine', name: 'Medications', icon: '💊', weight: 1, effect: { health: 20 } },
+                { id: 'hijab', name: 'Extra Hijab', icon: '🧕', weight: 0.5, effect: { hope: 5 } },
+                { id: 'photo', name: 'Family Photos', icon: '📷', weight: 0.5, effect: { hope: 20 } },
+                { id: 'phone', name: 'Phone & Power Bank', icon: '📱', weight: 1.5, effect: { } },
+                { id: 'book', name: 'Poetry Book', icon: '📚', weight: 1, effect: { hope: 10 } },
+                { id: 'jacket', name: 'Jacket', icon: '🧥', weight: 2, effect: { health: 10 } },
+                { id: 'soap', name: 'Soap & Hygiene', icon: '🧼', weight: 1, effect: { health: 5 } }
+            ],
+            amir: [
+                { id: 'water', name: 'Water', icon: '💧', weight: 2, effect: { health: 10 } },
+                { id: 'food', name: 'Food Supplies', icon: '🍞', weight: 2, effect: { health: 5 } },
+                { id: 'documents', name: 'Engineering Degree', icon: '🎓', weight: 0.5, effect: { } },
+                { id: 'passport', name: 'Passport', icon: '📘', weight: 0.5, effect: { } },
+                { id: 'money_belt', name: 'Hidden Money', icon: '💰', weight: 0.5, effect: { money: 250 } },
+                { id: 'medicine', name: 'First Aid', icon: '💊', weight: 1, effect: { health: 15 } },
+                { id: 'phone', name: 'Smartphone', icon: '📱', weight: 1, effect: { } },
+                { id: 'solar_charger', name: 'Solar Charger', icon: '🔋', weight: 1.5, effect: { } },
+                { id: 'blanket', name: 'Sleeping Bag', icon: '🛏️', weight: 2.5, effect: { health: 15 } },
+                { id: 'multi_tool', name: 'Multi-tool', icon: '🔧', weight: 0.5, effect: { } },
+                { id: 'photo', name: 'Family Photo', icon: '📷', weight: 0.5, effect: { hope: 15 } }
+            ],
+            linh: [
+                { id: 'water', name: 'Water Bottles', icon: '💧', weight: 2, effect: { health: 10 } },
+                { id: 'food', name: 'Rice & Dried Fish', icon: '🍚', weight: 1.5, effect: { health: 5 } },
+                { id: 'passport', name: 'Passport', icon: '📘', weight: 0.5, effect: { } },
+                { id: 'money_hidden', name: 'Hidden Cash', icon: '💵', weight: 0.5, effect: { money: 200 } },
+                { id: 'medicine', name: 'Medicine', icon: '💊', weight: 1, effect: { health: 20 } },
+                { id: 'phone', name: 'Phone', icon: '📱', weight: 1, effect: { } },
+                { id: 'cousin_contact', name: "Cousin's Address", icon: '✉️', weight: 0.5, effect: { hope: 15 } },
+                { id: 'jacket', name: 'Jacket', icon: '🧥', weight: 2, effect: { health: 10 } },
+                { id: 'photo', name: 'Family Photo', icon: '📷', weight: 0.5, effect: { hope: 20 } },
+                { id: 'jade_pendant', name: 'Jade Pendant', icon: '💎', weight: 0.5, effect: { hope: 10, money: 100 } },
+                { id: 'map', name: 'Map', icon: '🗺️', weight: 0.5, effect: { } },
+                { id: 'blanket', name: 'Blanket', icon: '🧣', weight: 2, effect: { health: 10 } }
+            ],
+            carlos: [
+                { id: 'water', name: 'Water Bottles', icon: '💧', weight: 2, effect: { health: 10 } },
+                { id: 'food', name: 'Dried Corn & Beans', icon: '🌽', weight: 1.5, effect: { health: 5 } },
+                { id: 'documents', name: 'ID & Birth Certificate', icon: '📄', weight: 0.5, effect: { } },
+                { id: 'money_belt', name: 'Money Belt', icon: '💰', weight: 0.5, effect: { money: 150 } },
+                { id: 'medicine', name: 'First Aid Kit', icon: '💊', weight: 1, effect: { health: 15 } },
+                { id: 'phone', name: 'Old Phone', icon: '📱', weight: 1, effect: { } },
+                { id: 'blanket', name: 'Poncho/Blanket', icon: '🧣', weight: 2, effect: { health: 10 } },
+                { id: 'machete', name: 'Machete', icon: '🔪', weight: 2, effect: { } },
+                { id: 'rope', name: 'Rope', icon: '🪢', weight: 1.5, effect: { } },
+                { id: 'photo', name: 'Family Photo', icon: '📷', weight: 0.5, effect: { hope: 15 } },
+                { id: 'cross', name: 'Cross Necklace', icon: '✝️', weight: 0.5, effect: { hope: 10 } },
+                { id: 'flashlight', name: 'Flashlight', icon: '🔦', weight: 1, effect: { } }
+            ]
+        };
+
+        let currentWeight = 0;
+        let selectedItems = [];
+
+        function selectCharacter(charId) {
+            gameState.character = characters[charId];
+            gameState.money = gameState.character.startMoney;
+
+            // Show context screen first
+            showContextScreen(charId);
+        }
+
+        function showContextScreen(charId) {
+            const character = characters[charId];
+            const contextData = character.contextData;
+
+            document.getElementById('context-title').textContent = contextData.title;
+            document.getElementById('context-subtitle').textContent = contextData.subtitle;
+            document.getElementById('context-text').textContent = contextData.text;
+
+            const dangerItems = document.getElementById('danger-items');
+            dangerItems.innerHTML = contextData.dangers.map(danger =>
+                `<li>${danger}</li>`
+            ).join('');
+
+            document.getElementById('context-conclusion').textContent = contextData.conclusion;
+
+            document.getElementById('character-selection').style.display = 'none';
+            document.getElementById('context-screen').style.display = 'block';
+        }
+
+        function showPackingFromContext() {
+            document.getElementById('context-screen').style.display = 'none';
+            document.getElementById('packing-scene').style.display = 'block';
+
+            // Setup packing scene
+            const charId = Object.keys(characters).find(k => characters[k] === gameState.character);
+            document.getElementById('packing-context').textContent = gameState.character.packingContext;
+
+            const itemsGrid = document.getElementById('items-grid');
+            itemsGrid.innerHTML = '';
+
+            packingItems[charId].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.id = 'item-' + item.id;
+                card.innerHTML = `
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-weight">${item.weight}kg</div>
+                `;
+                card.onclick = () => toggleItem(item, charId);
+                itemsGrid.appendChild(card);
+            });
+        }
+
+        function toggleItem(item, charId) {
+            const itemCard = document.getElementById('item-' + item.id);
+            const itemIndex = selectedItems.findIndex(i => i.id === item.id);
+
+            if (itemIndex > -1) {
+                // Remove item
+                selectedItems.splice(itemIndex, 1);
+                currentWeight -= item.weight;
+                itemCard.classList.remove('item-selected');
+            } else {
+                // Add item if weight allows
+                if (currentWeight + item.weight <= 6) {
+                    selectedItems.push(item);
+                    currentWeight += item.weight;
+                    itemCard.classList.add('item-selected');
+                }
+            }
+
+            updatePackingDisplay();
+        }
+
+        function updatePackingDisplay() {
+            document.getElementById('current-weight').textContent = currentWeight.toFixed(1);
+            const percentage = (currentWeight / 6) * 100;
+            document.getElementById('weight-fill').style.width = percentage + '%';
+
+            const packedItemsDiv = document.getElementById('packed-items');
+            if (selectedItems.length === 0) {
+                packedItemsDiv.innerHTML = '<div style="color: rgba(255,255,255,0.5); text-align: center; width: 100%;">Empty - Click items below to pack</div>';
+                document.getElementById('pack-continue').disabled = true;
+            } else {
+                packedItemsDiv.innerHTML = selectedItems.map(item =>
+                    `<div class="packed-item">${item.icon} ${item.name}</div>`
+                ).join('');
+                document.getElementById('pack-continue').disabled = false;
+            }
+
+            // Disable items that would exceed weight
+            const allItems = packingItems[Object.keys(characters).find(k => characters[k] === gameState.character)];
+            allItems.forEach(item => {
+                const card = document.getElementById('item-' + item.id);
+                const isSelected = selectedItems.find(i => i.id === item.id);
+                if (!isSelected && currentWeight + item.weight > 6) {
+                    card.classList.add('item-disabled');
+                } else if (!isSelected) {
+                    card.classList.remove('item-disabled');
+                }
+            });
+        }
+
+        function finishPacking() {
+            // Apply item effects to game state
+            selectedItems.forEach(item => {
+                if (item.effect.health) gameState.health += item.effect.health;
+                if (item.effect.hope) gameState.hope += item.effect.hope;
+                if (item.effect.money) gameState.money += item.effect.money;
+            });
+
+            gameState.inventory = selectedItems;
+
+            // Start the game
+            document.getElementById('packing-scene').style.display = 'none';
+            document.getElementById('game-content').style.display = 'block';
+
+            updateCharacterInfo();
+            updateDisplay();
+            updateInventory();
+            showScene(gameState.character.startScene);
+        }
+
+        function updateCharacterInfo() {
+            document.getElementById('character-info').innerHTML = `
+                <div class="character-avatar">${gameState.character.icon}</div>
+                <div class="character-details">
+                    <strong>${gameState.character.name}</strong>
+                    <div style="color: #666; margin-top: 5px;">From ${gameState.character.origin}</div>
+                </div>
+            `;
+        }
+
+        function updateDisplay() {
+            document.getElementById('money').textContent = '$' + gameState.money;
+            document.getElementById('health').textContent = Math.max(0, gameState.health) + '%';
+            document.getElementById('hope').textContent = Math.max(0, gameState.hope) + '%';
+        }
+
+        function updateInventory() {
+            if (gameState.inventory.length > 0) {
+                document.getElementById('inventory-display').style.display = 'block';
+                document.getElementById('inventory-items').innerHTML = gameState.inventory.map(item =>
+                    `<div class="inventory-item">${item.icon} ${item.name}</div>`
+                ).join('');
+            }
+        }
+
+        // STORY SCENES FOR EACH CHARACTER
+        const scenes = {
+            // MARÍA'S STORY (Mexico)
+            maria_start: {
+                text: "You stand at the edge of your village as the sun rises over the mountains. The bus to the border leaves in an hour. Your neighbor Rosa whispers that the cartel knows you're leaving - they'll come for your farm once you're gone. But staying means death.\n\nYou have ${MONEY}. The journey to the US border will take you through dangerous territory.",
+                choices: [
+                    { text: "Take the bus to Tijuana ($100) - safer but monitored", next: 'maria_bus', effects: { money: -100, hope: 5 } },
+                    { text: "Walk with a group heading north - dangerous but free", next: 'maria_walk', effects: { health: -15, hope: -5 } },
+                    { text: "Wait one more day to say goodbye to family", next: 'maria_wait', effects: { hope: 10 } }
+                ]
+            },
+
+            maria_bus: {
+                text: "The bus is crowded with others heading north. Most avoid eye contact. At a checkpoint, police board the bus. They're looking for cartel members, but they also shake down migrants for 'fines.'\n\nA woman next to you whispers: 'Give me your documents. If they see you're traveling alone, they'll take you. I can say you're my daughter.' You don't know if you can trust her.",
+                choices: [
+                    { text: "Trust the woman and give her your documents", next: 'maria_trust_stranger', effects: { hope: -15 } },
+                    { text: "Keep your documents and pay the fine ($50)", next: 'maria_checkpoint_pay', effects: { money: -50, hope: -5 }, requirement: { money: 50 } },
+                    { text: "Hide in the bathroom - risky", next: 'maria_hide', effects: { hope: -10 } },
+                    { text: "Run when the bus stops - extremely dangerous", next: 'maria_run_checkpoint', effects: { health: -20, hope: -25 } }
+                ]
+            },
+
+            maria_trust_stranger: {
+                text: "You hand the woman your documents. Your heart races. When the police reach your row, she speaks quickly in Spanish, showing both IDs. The officer looks at you, then at her, then waves you through.\n\nAfter they leave, she hands back your documents. 'We help each other survive,' she says. Her name is Elena. She's been on this route before.",
+                choices: [
+                    { text: "Thank Elena and ask if you can travel together", next: 'maria_with_elena', effects: { hope: 25 } },
+                    { text: "Thank her but continue alone", next: 'maria_checkpoint_pay', effects: { hope: 10 } }
+                ]
+            },
+
+            maria_with_elena: {
+                text: "Elena knows the routes, the dangers, the safe houses. For two weeks, you travel together. She teaches you who to trust and who to avoid.\n\nThen one night, she's gone. So is your money. All of it. You trusted the wrong person. You're alone again, and now you're broke.",
+                choices: [
+                    { text: "Feel the weight of the betrayal", next: 'maria_betrayed', effects: { money: -9999, hope: -35, health: -15 } }
+                ]
+            },
+
+            maria_betrayed: {
+                text: "You have nothing. No money, no guide, no trust left in anyone. But you've come too far to give up. You join a group of migrants walking through the desert. It's the only option left.\n\nThe desert will test everything you have.",
+                choices: [
+                    { text: "Begin the desert crossing", next: 'maria_desert_alone', effects: { health: -20 } }
+                ]
+            },
+
+            maria_desert_alone: {
+                text: "Three days into the desert, you're out of water. The sun is merciless. You see others collapsing. Then you spot something: a small cache of water bottles, hidden under rocks. But there's only enough for you - not enough to share with the family traveling with you.",
+                choices: [
+                    { text: "Take the water for yourself - you must survive", next: 'maria_selfish_choice', effects: { health: 20, hope: -30 } },
+                    { text: "Share the water with the family", next: 'maria_share_water', effects: { health: 5, hope: 20 } },
+                    { text: "Leave the water - it might be a trap", next: 'maria_suspicious', effects: { health: -25, hope: -10 } }
+                ]
+            },
+
+            maria_selfish_choice: {
+                text: "You drink the water in secret. The family's child dies that night from dehydration. You can hear the mother's cries. You made it to the border alive, but the guilt follows you.\n\nAt the port of entry, you request asylum. The officer sees the trauma in your eyes.",
+                choices: [
+                    { text: "Tell your story", next: 'maria_guilty_ending', effects: {} }
+                ]
+            },
+
+            maria_guilty_ending: {
+                text: "💔 ENDING: The Price of Survival\n\n{NAME}, you made it to America. Your asylum is approved. You find work, you send money home. But every night you see that child's face. Survival sometimes demands impossible choices.\n\nYou volunteer with organizations that provide water stations in the desert. Maybe you can save others.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            maria_share_water: {
+                text: "You call to the family. Together, you ration the small amount of water. It's not enough to quench anyone's thirst, but it's enough to keep going. That night, the father tells you about a safe house ahead. Your kindness has earned their trust and knowledge.",
+                choices: [
+                    { text: "Continue together", next: 'maria_safe_house', effects: { hope: 15, health: 10 } }
+                ]
+            },
+
+            maria_suspicious: {
+                text: "Your instinct proves right. The water was contaminated - you see others who drank it get violently ill. You barely make it to a migrant camp at the border, severely dehydrated but alive.",
+                choices: [
+                    { text: "Recover at the camp", next: 'maria_border_camp', effects: { health: 15, hope: 10 } }
+                ]
+            },
+
+            maria_border_camp: {
+                text: "The camp is overcrowded. Thousands wait here. You meet a coyote who offers to get you across tonight for $200. But you also meet a legal aid volunteer who offers to help you request asylum properly - it could take weeks.",
+                choices: [
+                    { text: "Pay the coyote ($200)", next: 'maria_coyote_trap', effects: { money: -200 }, requirement: { money: 200 } },
+                    { text: "Wait for legal asylum process", next: 'maria_asylum', effects: { hope: 10 } }
+                ]
+            },
+
+            maria_coyote_trap: {
+                text: "The coyote takes your money and leads you into the desert at night. But this isn't a crossing - it's a trap. You're taken to a house and held with others. They demand you call family for ransom money.",
+                choices: [
+                    { text: "Experience the kidnapping", next: 'maria_ransom_event', effects: { hope: -40, health: -20 } }
+                ]
+            },
+
+            maria_ransom_event: {
+                text: "RANSOM_SCREEN:You're locked in a dark room with six others. Your captors beat those who resist. For three days, you're given barely any food or water. They force you to call your family. Your mother's voice breaks when she hears you crying.|maria_ransom_aftermath",
+                choices: []
+            },
+
+            maria_ransom_aftermath: {
+                text: "Your family scrapes together $300 by selling everything. The smugglers release you on a empty road miles from anywhere. You're traumatized, weak, but free.\n\nYou walk for hours until you find the highway. A church van picks you up.",
+                choices: [
+                    { text: "Accept help from the church", next: 'maria_church_rescue', effects: { hope: 20, health: -10 } }
+                ]
+            },
+
+            maria_church_rescue: {
+                text: "The church volunteers feed you, give you clothes, and connect you with immigration lawyers. They've helped thousands. They tell you: 'You're one of the lucky ones. Many don't survive what you survived.'\n\nWith their help, you request asylum.",
+                choices: [
+                    { text: "Begin the asylum process", next: 'maria_trauma_ending', effects: {} }
+                ]
+            },
+
+            maria_trauma_ending: {
+                text: "💔 ENDING: Survivor\n\n{NAME}, you made it, but you carry scars that won't heal quickly. PTSD from the kidnapping haunts you. Your asylum is approved, but adjusting to life in the US is harder than the journey itself.\n\nYou join a support group for migrants who've survived trafficking. Speaking your truth helps others - and slowly, helps you heal.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            maria_run_checkpoint: {
+                text: "You bolt from the bus when it stops. Police chase you. You run through alleys, over fences. You escape, but you've drawn attention. Now every police officer in town is looking for you.",
+                choices: [
+                    { text: "Hide until nightfall", next: 'maria_fugitive', effects: { health: -15, hope: -20 } }
+                ]
+            },
+
+            maria_fugitive: {
+                text: "You hide in an abandoned building. Hungry, exhausted, terrified. You can't stay here. You can't go back. Going forward means risking capture.",
+                choices: [
+                    { text: "Try to sneak out of town", next: 'maria_caught', effects: { health: -10 } },
+                    { text: "Surrender to authorities and request asylum", next: 'maria_detention_event', effects: { hope: -15 } }
+                ]
+            },
+
+            maria_caught: {
+                text: "You're caught before dawn. Migration police find you. They're not gentle.",
+                choices: [
+                    { text: "You're taken into custody", next: 'maria_detention_event', effects: { health: -20, hope: -20 } }
+                ]
+            },
+
+            maria_detention_event: {
+                text: "DETENTION_SCREEN:The immigration detention center is cold, overcrowded, and terrifying. You're separated from others. Days blur together. They question you for hours. 'Why did you run?' they ask again and again. You try to explain about the cartel, about the threats. They don't believe you.|maria_detention_choice",
+                choices: []
+            },
+
+            maria_detention_choice: {
+                text: "After 40 days in detention, you're given a choice: voluntary departure (return to Mexico) or fight your case from detention, which could take months or years.",
+                choices: [
+                    { text: "Accept voluntary departure - give up the dream", next: 'maria_deportation_ending', effects: { hope: -50 } },
+                    { text: "Fight the case from detention", next: 'maria_fight_detention', effects: { hope: 10 } }
+                ]
+            },
+
+            maria_fight_detention: {
+                text: "You spend 8 months in detention fighting your case. You meet a lawyer through a nonprofit. Your case is strong - the cartel threats are documented. Finally, the judge grants you asylum.\n\nYou walk out of detention a free woman. Traumatized, but free.",
+                choices: [
+                    { text: "Start your new life", next: 'maria_detention_victory', effects: {} }
+                ]
+            },
+
+            maria_detention_victory: {
+                text: "🌟 ENDING: Freedom From Captivity\n\n{NAME}, you survived detention and won your case. The trauma is real - you still have nightmares about those cold cells. But you're in America now, legally, with work authorization.\n\nYou become an advocate for detained migrants, visiting detention centers to give hope to those still fighting. Your suffering has purpose.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            maria_deportation_ending: {
+                text: "💔 ENDING: Deported Dreams\n\n{NAME}, you're sent back to Mexico. The cartel finds out you tried to leave. You have to flee to a different state, living in hiding. The American dream is over, but you're alive.\n\nFive years later, you try again. This time, you'll make it.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            maria_walk: {
+                text: "You join a group of twelve others walking north through the desert. On the third day, you run out of water. One person in the group collapses from heat exhaustion. Someone suggests we should keep moving; someone else says we must help them.",
+                choices: [
+                    { text: "Stop to help the person - use your water and medicine", next: 'maria_help', effects: { health: -10, hope: 20 }, requirement: { inventory: 'water' } },
+                    { text: "Keep moving - you must survive", next: 'maria_keep_moving', effects: { hope: -25, health: 5 } },
+                    { text: "Give them some water but keep walking", next: 'maria_compromise', effects: { hope: 5, health: -5 } }
+                ]
+            },
+
+            maria_checkpoint_pay: {
+                text: "The officer takes your money with a smirk and moves on. You make it to Tijuana. The city is overwhelming - thousands of migrants waiting to cross. You hear about three options: request asylum at the port of entry (could take months), hire a coyote to cross illegally ($300), or attempt to cross alone through the desert.",
+                choices: [
+                    { text: "Request asylum - legal but long wait", next: 'maria_asylum', effects: { hope: 10 } },
+                    { text: "Hire a coyote ($300)", next: 'maria_coyote', effects: { money: -300 }, requirement: { money: 300 } },
+                    { text: "Cross alone through the desert", next: 'maria_desert_crossing', effects: { health: -30, hope: -10 } }
+                ]
+            },
+
+            maria_help: {
+                text: "You use your water and medicine to help stabilize the person. The group rests together. That night, the family you helped shares their food with you and tells you about a safe house ahead. Your kindness has earned you allies.",
+                choices: [
+                    { text: "Continue together to the safe house", next: 'maria_safe_house', effects: { hope: 15, health: 10 } }
+                ]
+            },
+
+            maria_safe_house: {
+                text: "The safe house is run by a church. They provide food, water, and information about the asylum process. The pastor tells you that crossing illegally is dangerous, but the legal process can take years. He offers to connect you with lawyers who help migrants.",
+                choices: [
+                    { text: "Accept the legal help and request asylum", next: 'maria_legal_ending', effects: { hope: 25 } },
+                    { text: "Thank them but continue north on your own", next: 'maria_continue_north', effects: { hope: 5 } }
+                ]
+            },
+
+            maria_asylum: {
+                text: "You join hundreds of others in line at the port of entry. You wait for three days. When your turn comes, you explain your situation - the cartel threats, the danger to your family. The officer listens carefully and tells you that you'll be allowed to enter and begin the asylum process.",
+                choices: [
+                    { text: "Begin your new life in America", next: 'maria_hopeful_ending', effects: {} }
+                ]
+            },
+
+            maria_hopeful_ending: {
+                text: "🌟 ENDING: A New Beginning\n\n{NAME}, you made it to the United States. The asylum process will be long and difficult. You may wait years for your hearing. But you're safe, and you can work. Every Sunday, you video call your family back home.\n\nYou work in a restaurant kitchen. It's hard work, but it's honest. You're alive. You have hope.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            // JEAN'S STORY (Haiti)
+            jean_start: {
+                text: "Port-au-Prince is burning. Gangs control most of the city. As a nurse, you've treated too many gunshot wounds, too many children. Your brother escaped to Florida two years ago. He's sent you money for the journey.\n\nYou have ${MONEY}. The journey will take you through multiple countries.",
+                choices: [
+                    { text: "Take a boat to the Bahamas ($200) - risky but direct", next: 'jean_boat', effects: { money: -200 }, requirement: { money: 200 } },
+                    { text: "Fly to Mexico and travel north ($250)", next: 'jean_mexico', effects: { money: -250 }, requirement: { money: 250 } },
+                    { text: "Join others walking to the Dominican Republic", next: 'jean_walk', effects: { health: -10 } }
+                ]
+            },
+
+            jean_boat: {
+                text: "The boat is overcrowded - forty people in a vessel meant for fifteen. The ocean is rough. Halfway to the Bahamas, the engine fails. Water starts seeping in. People panic.\n\nYou're a nurse - you can help keep people calm. But then you notice: a mother is holding a baby that's not breathing. If you try to save the baby, you can't help bail water. If the boat sinks, everyone dies. What do you do?",
+                choices: [
+                    { text: "Try to save the baby - your duty as a nurse", next: 'jean_save_baby', effects: { hope: 15, health: -15 } },
+                    { text: "Bail water to save everyone", next: 'jean_bail_boat', effects: { health: -10, hope: -20 } },
+                    { text: "Try to fix the engine - save everyone at once", next: 'jean_fix_engine', effects: { hope: 20, health: -10 } }
+                ]
+            },
+
+            jean_save_baby: {
+                text: "You perform CPR on the tiny infant while the boat takes on water. People shout at you to help bail. The baby coughs, gasps, starts breathing. The mother cries and thanks God.\n\nBut the boat is sinking faster now. Someone has to make a sacrifice. An old man stands up: 'I've lived enough. Save the young ones.' He jumps into the ocean.",
+                choices: [
+                    { text: "Watch in horror as he sacrifices himself", next: 'jean_rescue', effects: { hope: -25, health: -10 } }
+                ]
+            },
+
+            jean_bail_boat: {
+                text: "You ignore the dying baby and bail water. You can't look at the mother's face. The baby dies in her arms while you work. You helped save thirty-nine people, but the weight of that one death crushes you.",
+                choices: [
+                    { text: "Keep bailing until rescue comes", next: 'jean_rescue_guilt', effects: { hope: -30 } }
+                ]
+            },
+
+            jean_rescue_guilt: {
+                text: "The Coast Guard rescues you. As you're pulled aboard, you see the mother clutching her dead baby. She won't look at you. You made a choice. You saved the many. But you'll never forget the one you couldn't save.",
+                choices: [
+                    { text: "Process what happened", next: 'jean_coast_guard_trauma', effects: { health: -10 } }
+                ]
+            },
+
+            jean_coast_guard_trauma: {
+                text: "The Coast Guard takes you to Florida. Your asylum is processed quickly - you're a medical professional with skills America needs. You're approved. You're in America. You made it.\n\nBut every night, you see that baby's face.",
+                choices: [
+                    { text: "Try to find peace", next: 'jean_traumatic_ending', effects: {} }
+                ]
+            },
+
+            jean_traumatic_ending: {
+                text: "💔 ENDING: The Weight of Choices\n\n{NAME}, you're in America. You have your nursing license. You work in a hospital in Miami. Your brother is proud of you. But the journey broke something inside you.\n\nYou specialize in pediatric care now. Maybe saving other children can balance the scales. Maybe not. But you have to try.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            jean_rescue: {
+                text: "The Coast Guard arrives minutes later. Everyone survives except the old man. The baby you saved is crying loudly - the most beautiful sound you've ever heard. The mother hugs you and won't let go.",
+                choices: [
+                    { text: "Continue to the US", next: 'jean_coast_guard', effects: { hope: 20 } }
+                ]
+            },
+
+            jean_fix_engine: {
+                text: "You crawl to the engine, your hands shaking. You've watched mechanics work, but you're not trained. You try different things. The boat is filling with water. People are praying.\n\nThen - a miracle. The engine sputters to life. The boat erupts in celebration. You saved everyone.",
+                choices: [
+                    { text: "Reach the Bahamas safely", next: 'jean_bahamas_success', effects: { hope: 35 } }
+                ]
+            },
+
+            jean_calm: {
+                text: "Your medical training helps. You organize people into shifts - bailing water, watching for boats, keeping watch. After eight hours, a fishing vessel spots you. They're Dominican fishermen. They radio the Coast Guard. You're rescued but taken into custody.",
+                choices: [
+                    { text: "Request asylum from US Coast Guard", next: 'jean_coast_guard', effects: { hope: 10 } }
+                ]
+            },
+
+            jean_coast_guard: {
+                text: "The Coast Guard processes you. As a Haitian national, you have special status under humanitarian programs. They contact your brother in Florida. After two weeks in detention, you're released with a court date for your asylum hearing. Your brother picks you up.",
+                choices: [
+                    { text: "Start your new life", next: 'jean_best_ending', effects: {} }
+                ]
+            },
+
+            jean_best_ending: {
+                text: "🌟 ENDING: Reunion\n\n{NAME}, you made it. Your brother cries when he sees you. He's been working two jobs, saving money for this moment. You stay with him in Miami while you wait for your asylum hearing.\n\nYour nursing credentials need to be verified, but you find work as a home health aide. The pay is less than you made before, but you're safe. You can sleep without hearing gunshots.\n\nYou've already sent money home to help others escape.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            // FATIMA'S STORY (Syria)
+            fatima_start: {
+                text: "You've already fled Aleppo to Turkey. You've lived in Istanbul for two years, but anti-refugee violence is increasing. You have documents for refugee resettlement in the US, but the process has stalled.\n\nYou have ${MONEY}. You can wait for the official process, or find another way.",
+                choices: [
+                    { text: "Wait for official resettlement (could take years)", next: 'fatima_wait', effects: { hope: -20 } },
+                    { text: "Fly to Mexico and request asylum at US border ($600)", next: 'fatima_mexico', effects: { money: -600 }, requirement: { money: 600 } },
+                    { text: "Try to reach the US through Canada", next: 'fatima_canada', effects: { money: -500 }, requirement: { money: 500 } }
+                ]
+            },
+
+            fatima_mexico: {
+                text: "You fly to Tijuana with a tourist visa. The city is filled with migrants from around the world - Haitians, Central Americans, Africans, and others like you from the Middle East. A volunteer organization helps asylum seekers prepare their cases.",
+                choices: [
+                    { text: "Work with the volunteers to prepare your case", next: 'fatima_prepare', effects: { hope: 20 } },
+                    { text: "Request asylum immediately", next: 'fatima_immediate', effects: { hope: 10 } }
+                ]
+            },
+
+            fatima_prepare: {
+                text: "You spend two weeks preparing. The volunteers help you organize your documents - proof of your teaching career, evidence of the bombing of your school, testimonials. When you present your case at the port of entry, you're prepared.",
+                choices: [
+                    { text: "Present your asylum case", next: 'fatima_success', effects: {} }
+                ]
+            },
+
+            fatima_success: {
+                text: "🌟 ENDING: The Teacher Returns\n\n{NAME}, your case is strong. You're admitted and given a work permit while your asylum claim is processed. You settle in a city with a large Syrian community.\n\nWithin months, you're volunteering at a school, helping refugee children. The principal is impressed and helps you get your teaching credentials recognized. A year later, you're teaching again.\n\nYou've created a program to help other Syrian refugees navigate the resettlement process. Your journey was long, but you've turned your suffering into service.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            // AMIR'S STORY (Sudan)
+            amir_start: {
+                text: "The civil war has destroyed Khartoum. As an engineer, you've watched the infrastructure you helped build get torn apart. Your university colleagues have scattered across the world.\n\nYou have ${MONEY}. Your engineering degree might help you get a work visa, but the embassies are closed.",
+                choices: [
+                    { text: "Travel through Egypt to Libya, then attempt Mediterranean crossing", next: 'amir_mediterranean', effects: { money: -400, health: -20 }, requirement: { money: 400 } },
+                    { text: "Fly to South America and travel north (safer, expensive)", next: 'amir_south_america', effects: { money: -500 }, requirement: { money: 500 } },
+                    { text: "Try to reach Ethiopia and request UN refugee status", next: 'amir_ethiopia', effects: { money: -100 } }
+                ]
+            },
+
+            amir_south_america: {
+                text: "You fly to Ecuador (no visa required for Sudanese). From there, you join the thousands traveling north through Colombia, Panama, Central America, and Mexico. The Darién Gap - the jungle between Colombia and Panama - is the most dangerous part.",
+                choices: [
+                    { text: "Hire a guide through the Darién Gap ($300)", next: 'amir_guide', effects: { money: -300, health: -10 }, requirement: { money: 300 } },
+                    { text: "Travel with a group without a guide", next: 'amir_group', effects: { health: -30, hope: -15 } }
+                ]
+            },
+
+            amir_guide: {
+                text: "The guide knows the routes through the jungle. On day three, you find a young woman from Somalia collapsed on the trail, barely breathing. She was separated from her group.\n\nThe guide says: 'We can't stop. If we slow down, we all die. That's the jungle's law.' But you're an engineer - you solve problems, you don't abandon people.",
+                choices: [
+                    { text: "Stop to help her, even if it slows the group", next: 'amir_help_woman', effects: { health: -20, hope: 25 } },
+                    { text: "Keep moving - the guide is right", next: 'amir_keep_moving_jungle', effects: { hope: -30, health: 5 } },
+                    { text: "Give her your water and medicine, then continue", next: 'amir_compromise_help', effects: { health: -10, hope: 10 } }
+                ]
+            },
+
+            amir_help_woman: {
+                text: "You stop. You give her water, share your food, let her rest. The group has to slow down. The guide is furious. That night, he abandons you both in the jungle.\n\nYou're lost, with limited supplies, and responsible for someone who can barely walk.",
+                choices: [
+                    { text: "Try to find your way out together", next: 'amir_lost_jungle', effects: { health: -25, hope: -15 } }
+                ]
+            },
+
+            amir_lost_jungle: {
+                text: "For three days, you navigate by the sun and stars, using your engineering knowledge. You build shelter, purify water, keep her alive. On the fourth day, you reach a village. You both survived.\n\nThe woman, Amina, says: 'You saved my life. I will never forget.' You continue the journey together.",
+                choices: [
+                    { text: "Travel north together", next: 'amir_with_amina', effects: { hope: 30, health: 10 } }
+                ]
+            },
+
+            amir_with_amina: {
+                text: "You and Amina travel through Central America together. She speaks more languages than you, which helps. You use your engineering skills to earn money fixing things. You make a good team.\n\nAt the US border, you request asylum together. The officer asks: 'Are you family?' You both pause. Then Amina says: 'Yes. We are.'",
+                choices: [
+                    { text: "Enter the US together", next: 'amir_amina_ending', effects: {} }
+                ]
+            },
+
+            amir_amina_ending: {
+                text: "🌟 ENDING: Found Family in Crisis\n\n{NAME}, you found something unexpected on the journey: family. Not by blood, but by choice. You and Amina settle in the same city. You become her sponsor, she becomes your closest friend.\n\nYou both find work - you as an engineer, she as a translator. You face the challenges of asylum together. The journey was hell, but it gave you a sister.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            amir_keep_moving_jungle: {
+                text: "You keep walking. You don't look back. That night, you can't sleep. You see her face every time you close your eyes. You made it through the jungle alive, but something inside you died there.",
+                choices: [
+                    { text: "Continue to Central America, haunted", next: 'amir_central_america', effects: { hope: -20 } }
+                ]
+            },
+
+            amir_compromise_help: {
+                text: "You give her your water and medicine. You show her which direction to go. Then you continue with your group. You tried to help. You hope it was enough.\n\nWeeks later, in Panama, you see a news report: a Somali woman was found alive in the Darién Gap. She told rescuers: 'A Sudanese man gave me water and showed me the way.' You'll never know if it was her, but you hope it was.",
+                choices: [
+                    { text: "Continue your journey", next: 'amir_central_america', effects: { hope: 15 } }
+                ]
+            },
+
+            amir_central_america: {
+                text: "You travel through Panama, Costa Rica, Nicaragua, Honduras, Guatemala. Each border is a negotiation. Sometimes you pay bribes. Sometimes you hide in trucks. After three months, you reach the US-Mexico border.",
+                choices: [
+                    { text: "Request asylum at the official port", next: 'amir_asylum', effects: { hope: 15 } }
+                ]
+            },
+
+            amir_asylum: {
+                text: "You present your case. You have your engineering degree, evidence of the war, photos of the destroyed buildings you designed. The officer notes that you speak English well. You're processed and given a court date.",
+                choices: [
+                    { text: "Begin your asylum process", next: 'amir_engineering_ending', effects: {} }
+                ]
+            },
+
+            amir_engineering_ending: {
+                text: "🌟 ENDING: Building Again\n\n{NAME}, you made it to the United States. Your journey took you across two continents and through a dozen countries. You lost everything but your education.\n\nWhile waiting for your asylum hearing, you meet other Sudanese refugees. You volunteer with an organization helping refugees find housing. Your engineering skills are valuable - you help design accessible housing modifications.\n\nEventually, a small firm sponsors your work visa. You're not designing skyscrapers yet, but you're building again. More importantly, you're safe.\n\nYou've helped three other Sudanese engineers navigate the refugee process.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            // Generic shared scenes
+            desert_crossing: {
+                text: "The desert is unforgiving. The heat during the day reaches 110°F. At night, it drops to freezing. Your water runs low faster than expected. After two days, you're severely dehydrated.",
+                choices: [
+                    { text: "Push forward - the border must be close", next: 'desert_collapse', effects: { health: -40 } },
+                    { text: "Find shade and wait for nightfall", next: 'desert_wait', effects: { health: -20, hope: -10 } }
+                ]
+            },
+
+            desert_collapse: {
+                text: "You collapse from heat exhaustion. When you wake up, you're in a Border Patrol vehicle. They give you water and medical attention. You're alive, but you're being processed for deportation.",
+                choices: [
+                    { text: "Request asylum from Border Patrol", next: 'border_patrol_asylum', effects: { hope: 5 } }
+                ]
+            },
+
+            border_patrol_asylum: {
+                text: "💔 ENDING: Detained Dreams\n\n{NAME}, your journey ended in detention. You're processed through the immigration system. Your asylum claim will be heard, but from behind bars. The wait could be months or years.\n\nBut you're alive. And where there's life, there's hope.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            desert_wait: {
+                text: "You find shelter behind a rock formation and wait. The temperature drops dramatically at night. By morning, you're weak but rested enough to continue. You see lights in the distance - could be the border town.",
+                choices: [
+                    { text: "Walk toward the lights", next: 'reach_border_town', effects: { health: -10 } }
+                ]
+            },
+
+            reach_border_town: {
+                text: "You reach a small border town. There's a shelter run by volunteers who help migrants. They offer you food, water, and information about requesting asylum legally.",
+                choices: [
+                    { text: "Request asylum with their help", next: 'maria_asylum', effects: { hope: 15, health: 20 } }
+                ]
+            },
+
+            // Missing María scenes
+            maria_wait: {
+                text: "You spend one more day with your family. Your children cry and your mother makes your favorite meal. The cartel members drive by slowly that evening - a warning. You leave at dawn, your heart heavy but your resolve strong.",
+                choices: [
+                    { text: "Begin the journey the next morning", next: 'prepare_departure', effects: { hope: 10 } }
+                ]
+            },
+
+            prepare_departure: {
+                text: "At the bus station, you see many others leaving too. The violence has driven whole families from their homes. You have enough money for the bus or to travel with a guide on foot.",
+                choices: [
+                    { text: "Take the bus ($100)", next: 'maria_bus', effects: { money: -100 } },
+                    { text: "Join a walking group", next: 'maria_walk', effects: { health: -10 } }
+                ]
+            },
+
+            maria_hide: {
+                text: "You slip into the bathroom and lock the door. You can hear the police moving through the bus, demanding papers. They try the bathroom door. Your heart pounds. They move on. You made it through, but the fear stays with you.",
+                choices: [
+                    { text: "Continue to Tijuana", next: 'maria_checkpoint_pay', effects: { hope: 5 } }
+                ]
+            },
+
+            maria_lie: {
+                text: "You show your ID and smile nervously, explaining you're visiting family in Guadalajara. The officer studies you for a long moment, then hands back your ID with a warning: 'Be careful.' He knows you're lying, but lets you go.",
+                choices: [
+                    { text: "Thank him and continue", next: 'maria_checkpoint_pay', effects: { hope: 10 } }
+                ]
+            },
+
+            maria_keep_moving: {
+                text: "You keep walking with the group, leaving the collapsed person behind. That night, guilt eats at you. The group is quiet - no one feels good about the choice. But you're all still moving north.",
+                choices: [
+                    { text: "Continue to the border", next: 'maria_border_alone', effects: { hope: -15, health: 10 } }
+                ]
+            },
+
+            maria_compromise: {
+                text: "You give them water and some food, then keep moving. It's not enough to save them, but it's something. The group continues forward, the weight of the decision heavy on everyone's shoulders.",
+                choices: [
+                    { text: "Reach the border", next: 'maria_border_alone', effects: { hope: -5 } }
+                ]
+            },
+
+            maria_border_alone: {
+                text: "After weeks of travel, you stand at the US border. You're exhausted and low on resources. You can see the crossing point from here.",
+                choices: [
+                    { text: "Request asylum at the port of entry", next: 'maria_asylum', effects: { hope: 10 } },
+                    { text: "Try to cross the desert", next: 'desert_crossing', effects: { health: -25 } }
+                ]
+            },
+
+            maria_coyote: {
+                text: "You pay the coyote $300. He promises a safe crossing. At 2 AM, he leads a group of 15 people across the border. Border Patrol spots you. The coyote runs. You're caught and processed for deportation. But you request asylum.",
+                choices: [
+                    { text: "Begin the asylum process", next: 'border_patrol_asylum', effects: { hope: -10 } }
+                ]
+            },
+
+            maria_desert_crossing: {
+                text: "You attempt the desert crossing alone. It's a terrible decision. The heat is overwhelming, and you quickly become lost.",
+                choices: [
+                    { text: "Try to find your way", next: 'desert_crossing', effects: { health: -20 } }
+                ]
+            },
+
+            maria_continue_north: {
+                text: "You thank the church volunteers and continue on your own. After several more weeks of travel, you reach the US border and request asylum. The process is slow, but you're persistent.",
+                choices: [
+                    { text: "Wait for your asylum hearing", next: 'maria_hopeful_ending', effects: { hope: 5 } }
+                ]
+            },
+
+            maria_legal_ending: {
+                text: "🌟 ENDING: Faith and Hope\n\n{NAME}, with the help of the church lawyers, your asylum case is strong. You're admitted to the US and given a work permit. You find work at a farm in California. The work is hard, but you're safe. You send money home every month.\n\nYou volunteer at the same church that helped you, now helping other migrants navigate the system. You've turned your struggle into service.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            // Missing Jean scenes
+            jean_mexico: {
+                text: "You fly to Mexico City with a tourist visa. From there, you travel north by bus to Tijuana. The journey takes days. At the border, you join hundreds of other Haitians waiting to request asylum.",
+                choices: [
+                    { text: "Wait in line for asylum processing", next: 'jean_asylum_wait', effects: { hope: 5 } }
+                ]
+            },
+
+            jean_asylum_wait: {
+                text: "You wait for days in a migrant camp near the border. Finally, your number is called. You present your case - the violence in Haiti, your medical training, your brother in Florida. The officer listens carefully.",
+                choices: [
+                    { text: "Wait for their decision", next: 'jean_approved', effects: { hope: 10 } }
+                ]
+            },
+
+            jean_approved: {
+                text: "Your asylum request is approved! You're allowed to enter and given a court date. Your brother drives 20 hours to pick you up. When you see him, you both cry.",
+                choices: [
+                    { text: "Start your new life", next: 'jean_best_ending', effects: {} }
+                ]
+            },
+
+            jean_walk: {
+                text: "You join others walking to the Dominican Republic. The journey takes weeks. At the border, Dominican authorities are hostile to Haitian migrants. You're turned away multiple times before finding a way through.",
+                choices: [
+                    { text: "Continue north from the DR", next: 'jean_dr_north', effects: { health: -15, money: -100 } }
+                ]
+            },
+
+            jean_dr_north: {
+                text: "You work in the Dominican Republic for months, saving money. Eventually, you save enough to fly to Mexico and continue north from there.",
+                choices: [
+                    { text: "Fly to Mexico and continue", next: 'jean_mexico', effects: { money: -200, hope: 15 } }
+                ]
+            },
+
+            jean_fix: {
+                text: "You crawl to the engine and tinker with it. Your hands shake from fear, but you remember watching mechanics work on generators back home. After twenty terrifying minutes, the engine sputters back to life! The boat erupts in cheers.",
+                choices: [
+                    { text: "Continue to the Bahamas", next: 'jean_bahamas_success', effects: { hope: 30, health: -5 } }
+                ]
+            },
+
+            jean_bail: {
+                text: "You bail water as fast as you can. Others join you. Together, you keep the boat from sinking until another vessel spots you and comes to help.",
+                choices: [
+                    { text: "Be rescued", next: 'jean_calm', effects: { health: -15 } }
+                ]
+            },
+
+            jean_bahamas_success: {
+                text: "You make it to the Bahamas! From there, you work for six months, saving money. Eventually, you have enough to fly to Florida. At the airport, your brother is waiting.",
+                choices: [
+                    { text: "Reunite with your brother", next: 'jean_best_ending', effects: {} }
+                ]
+            },
+
+            // Missing Fatima scenes
+            fatima_wait: {
+                text: "You decide to wait for the official resettlement process. Two years pass. The wait is agonizing. Finally, you receive notification: your case has been approved! You're assigned to a city in Michigan with a large Arab American community.",
+                choices: [
+                    { text: "Fly to America legally", next: 'fatima_legal_success', effects: { hope: 30 } }
+                ]
+            },
+
+            fatima_legal_success: {
+                text: "🌟 ENDING: The Patient Path\n\n{NAME}, your patience paid off. You arrive in America legally with full refugee status. A resettlement agency helps you find housing and work. Within months, you're teaching ESL to other refugees.\n\nYour journey was long, but you never gave up hope. Now you help others find theirs.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            fatima_canada: {
+                text: "You fly to Canada through Turkey and attempt to cross into the US from Canada. However, due to the Safe Third Country Agreement, you're turned back and must request asylum in Canada instead. It's not your first choice, but it's safe.",
+                choices: [
+                    { text: "Build a new life in Canada", next: 'fatima_canada_ending', effects: { hope: 15 } }
+                ]
+            },
+
+            fatima_canada_ending: {
+                text: "🌟 ENDING: A Different Destination\n\n{NAME}, you settle in Toronto instead of the US. Canada welcomes you as a refugee. You find work teaching Arabic and helping other Syrian refugees. It wasn't the plan, but it's a good life. You're safe, and that's what matters most.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            fatima_immediate: {
+                text: "You request asylum immediately without preparation. Your case is weaker, and the process takes longer. After months of uncertainty, you're admitted with conditions. You must report regularly and your work permit is delayed.",
+                choices: [
+                    { text: "Accept the conditions and enter", next: 'fatima_conditional', effects: { hope: 5 } }
+                ]
+            },
+
+            fatima_conditional: {
+                text: "🌟 ENDING: Conditional Freedom\n\n{NAME}, you made it to America, but the conditions are strict. You must report monthly and your case will take years to finalize. Still, you're here, you're working, and you're helping other Syrians navigate the system. The uncertainty is hard, but it's better than war.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            // Missing Amir scenes
+            amir_mediterranean: {
+                text: "You travel through Egypt to Libya. The journey is dangerous. In Libya, you pay smugglers for passage across the Mediterranean. The boat is overcrowded and unseaworthy. Halfway across, the boat begins to sink.",
+                choices: [
+                    { text: "Hold on and hope for rescue", next: 'amir_rescued', effects: { health: -30, hope: -20 } }
+                ]
+            },
+
+            amir_rescued: {
+                text: "The Italian Coast Guard rescues you and the other survivors. You're processed in Italy as a refugee. It's not America, but you're alive and safe. You settle in Rome and begin rebuilding your life.",
+                choices: [
+                    { text: "Start new in Italy", next: 'amir_italy_ending', effects: {} }
+                ]
+            },
+
+            amir_italy_ending: {
+                text: "🌟 ENDING: Mediterranean Survivor\n\n{NAME}, you survived one of the world's most dangerous journeys. Italy grants you refugee status. Your engineering skills help you find work. You join an organization that rescues migrants at sea - you want to save others like you were saved.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            amir_ethiopia: {
+                text: "You travel to Ethiopia and register with the UN refugee agency. The camp is overcrowded. You wait for resettlement for three years. Finally, you're selected for resettlement in the United States.",
+                choices: [
+                    { text: "Resettle in America", next: 'amir_un_success', effects: { hope: 25 } }
+                ]
+            },
+
+            amir_un_success: {
+                text: "🌟 ENDING: The Official Path\n\n{NAME}, the UN process worked. You arrive in America as an official refugee with full documentation. A resettlement agency helps you get settled. Within a year, you're working as an engineer again. The wait was long, but the outcome is stable.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            amir_group: {
+                text: "You cross the Darién Gap without a guide. It's hell. The jungle is unforgiving - mud, rain, snakes, and worse. You see bodies of those who didn't make it. But you survive. Barely.",
+                choices: [
+                    { text: "Recover and continue north", next: 'amir_central_america', effects: { health: -35, hope: -25 } }
+                ]
+            },
+
+            // LINH'S STORY (Vietnam)
+            linh_start: {
+                text: "You've been marked by the government for your political activism and blogging about corruption. Your cousin in California has sent money to help you escape. You need to leave quickly.\n\nYou have ${MONEY}. The journey will be long and expensive.",
+                choices: [
+                    { text: "Fly to Mexico as a tourist and travel north ($300)", next: 'linh_mexico', effects: { money: -300 }, requirement: { money: 300 } },
+                    { text: "Take a boat to Thailand, then travel overland", next: 'linh_thailand', effects: { money: -200, health: -10 }, requirement: { money: 200 } },
+                    { text: "Try to reach the US through a refugee program", next: 'linh_refugee', effects: { hope: -15 } }
+                ]
+            },
+
+            linh_mexico: {
+                text: "You fly to Cancun with a tourist visa. From there, you travel north through Mexico. In a bus station, you're approached by a man who says he knows your cousin in California. He offers to drive you to the border - much faster than the bus.\n\nSomething feels wrong. But he knows your cousin's name. How?",
+                choices: [
+                    { text: "Accept the ride - it could be legitimate", next: 'linh_kidnapped', effects: { hope: -30 } },
+                    { text: "Refuse politely and take the bus", next: 'linh_bus_safe', effects: { hope: 5, money: -50 } },
+                    { text: "Confront him - how does he know your cousin?", next: 'linh_confront', effects: { hope: -10 } }
+                ]
+            },
+
+            linh_kidnapped: {
+                text: "You get in his car. Twenty minutes later, he pulls a gun. You're taken to a house where other migrants are held. They've targeted you specifically - Vietnamese migrants often have family abroad who can pay ransoms.",
+                choices: [
+                    { text: "Experience the kidnapping", next: 'linh_ransom_event', effects: { health: -25, hope: -40 } }
+                ]
+            },
+
+            linh_ransom_event: {
+                text: "RANSOM_SCREEN:You're held for two weeks. They force you to video call your cousin. You're crying, begging. Your cousin sees the bruises on your face. They demand $5,000. Your cousin has to borrow from everyone he knows. He sends the money. You're released on a highway, traumatized but alive.|linh_post_ransom",
+                choices: []
+            },
+
+            linh_post_ransom: {
+                text: "You're free, but your cousin is now $5,000 in debt. You hitchhike to the US border, barely holding yourself together. At the port of entry, you request asylum. The trauma is written all over your face. The officer sees it.",
+                choices: [
+                    { text: "Tell your whole story", next: 'linh_trauma_asylum', effects: { hope: 15 } }
+                ]
+            },
+
+            linh_trauma_asylum: {
+                text: "Your asylum is approved - both for political persecution in Vietnam and as a trafficking victim. You're given resources: therapy, legal aid, temporary housing. Your cousin picks you up. He hugs you and says, 'Don't worry about the money. You're alive. That's all that matters.'\n\nBut you do worry. You'll spend years paying him back.",
+                choices: [
+                    { text: "Begin your recovery", next: 'linh_trauma_ending', effects: {} }
+                ]
+            },
+
+            linh_trauma_ending: {
+                text: "💔 ENDING: The Price of Freedom\n\n{NAME}, you made it to America, but the journey nearly destroyed you. The kidnapping left scars - physical and psychological. You work three jobs to pay back your cousin. Sleep is filled with nightmares.\n\nBut slowly, with therapy and time, you heal. You start cooking again. Food becomes your therapy. You're alive. You're in America. You're free.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            linh_bus_safe: {
+                text: "You refuse the ride and take the bus. Three days later, you see a news report: Vietnamese migrants were found held hostage in Mexico. One of the kidnappers matches the description of the man who approached you. Your instincts saved you.",
+                choices: [
+                    { text: "Thank your lucky stars and continue north", next: 'linh_tijuana', effects: { hope: 20 } }
+                ]
+            },
+
+            linh_tijuana: {
+                text: "You reach Tijuana safely. At the border, you request asylum. You have documentation of your political persecution and blogging against the Vietnamese government. Your case is strong.",
+                choices: [
+                    { text: "Request asylum", next: 'linh_asylum', effects: { hope: 10 } }
+                ]
+            },
+
+            linh_confront: {
+                text: "You ask: 'How do you know my cousin?' The man hesitates, then admits: 'I saw it on your phone when you were buying your ticket. I was trying to help, I swear.'\n\nMaybe he was telling the truth. Maybe not. You'll never know. But you don't get in the car.",
+                choices: [
+                    { text: "Take the bus instead", next: 'linh_bus_safe', effects: { hope: 10 } }
+                ]
+            },
+
+            linh_asylum: {
+                text: "You explain your situation at the port of entry - the political persecution, the threats, the fear. You have documentation of your activism. The officer reviews your case carefully. You're allowed to enter and begin the asylum process.",
+                choices: [
+                    { text: "Call your cousin with the good news", next: 'linh_success', effects: { hope: 30 } }
+                ]
+            },
+
+            linh_success: {
+                text: "🌟 ENDING: The Chef Returns\n\n{NAME}, you made it to California. Your cousin picks you up and cries when he sees you. While your asylum case is pending, you work in his restaurant. Your cooking becomes popular - you blend Vietnamese and Mexican flavors, creating something new.\n\nYou start a blog about your journey and help other Vietnamese asylum seekers. You're free to speak now.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            linh_thailand: {
+                text: "You take a boat to Thailand. From there, you travel through Myanmar, Bangladesh, India - a years-long journey through some of the world's most difficult terrain. The journey breaks you down, but also makes you stronger.",
+                choices: [
+                    { text: "Eventually reach Turkey and continue to US", next: 'linh_long_route', effects: { health: -25, hope: -20, money: -150 } }
+                ]
+            },
+
+            linh_long_route: {
+                text: "After two years of travel, you finally reach the US through Mexico. You're exhausted, nearly broke, but alive. Your asylum case is complicated because of your long journey, but with your cousin's help and a good lawyer, you're eventually approved.",
+                choices: [
+                    { text: "Reflect on the long journey", next: 'linh_hard_ending', effects: {} }
+                ]
+            },
+
+            linh_hard_ending: {
+                text: "💔 ENDING: The Long Road\n\n{NAME}, your journey took everything from you. But you made it. You're in America now, safe from persecution. The trauma of the journey will stay with you, but so will the strength you discovered. You're a survivor.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            linh_refugee: {
+                text: "You try to apply for refugee status, but Vietnam is not classified as a refugee-producing country by most nations. Your political asylum claim is difficult to prove from within Vietnam. After months of rejection, you realize you need to leave first.",
+                choices: [
+                    { text: "Flee to Mexico and try from there", next: 'linh_mexico', effects: { hope: -10, money: -100 } }
+                ]
+            },
+
+            // CARLOS'S STORY (Ecuador)
+            carlos_start: {
+                text: "Ecuador's economy has collapsed. Your farm failed. Your children are hungry. You've heard that the US has work, opportunities. You can walk north - thousands are doing it.\n\nYou have ${MONEY}. The journey through Central America and Mexico is long but possible.",
+                choices: [
+                    { text: "Begin walking north with other migrants", next: 'carlos_walk', effects: { health: -10 } },
+                    { text: "Take buses as far as your money allows", next: 'carlos_bus', effects: { money: -200 }, requirement: { money: 200 } },
+                    { text: "Wait and try to save more money first", next: 'carlos_wait', effects: { hope: -10 } }
+                ]
+            },
+
+            carlos_walk: {
+                text: "You join a caravan of migrants heading north. You walk through Colombia, Panama, Costa Rica. The journey is brutal. The Darién Gap nearly kills you. But the group helps each other survive.",
+                choices: [
+                    { text: "Continue through Central America", next: 'carlos_central_america', effects: { health: -20, money: -100 } }
+                ]
+            },
+
+            carlos_central_america: {
+                text: "You walk through Nicaragua, Honduras, Guatemala. In Honduras, armed men stop your group. They're not police - they're gang members. They demand money from everyone. Those who can't pay will be taken.\n\nYou have ${MONEY}. The gang leader points at a young girl in your group. 'She comes with us - unless someone pays $150 for her.'",
+                choices: [
+                    { text: "Pay the $150 to save the girl", next: 'carlos_save_girl', effects: { money: -150, hope: 25 }, requirement: { money: 150 } },
+                    { text: "Offer $100 - all you can spare", next: 'carlos_negotiate', effects: { money: -100, hope: 10 }, requirement: { money: 100 } },
+                    { text: "Stay silent - you need your money to survive", next: 'carlos_silent', effects: { hope: -35, health: -10 } },
+                    { text: "Try to fight them - suicidal but brave", next: 'carlos_fight_gang', effects: { health: -50, hope: 15 } }
+                ]
+            },
+
+            carlos_save_girl: {
+                text: "You hand over the money. The gang leader counts it and smirks. 'You're a good man. Stupid, but good.' They let the girl go. She runs to her mother. The group continues forward.\n\nYou're nearly broke now. But you can sleep tonight.",
+                choices: [
+                    { text: "Continue north with the group", next: 'carlos_mexico_broke', effects: { hope: 15 } }
+                ]
+            },
+
+            carlos_negotiate: {
+                text: "You offer $100. The gang leader laughs. 'Not enough.' He takes the girl anyway. You tried. But trying doesn't always mean saving.",
+                choices: [
+                    { text: "Continue in shame", next: 'carlos_mexico', effects: { hope: -25 } }
+                ]
+            },
+
+            carlos_silent: {
+                text: "You look away as they take the girl. Her screams echo in your mind for the rest of the journey. You saved your money. But at what cost?",
+                choices: [
+                    { text: "Continue north, haunted", next: 'carlos_mexico_guilt', effects: { hope: -30 } }
+                ]
+            },
+
+            carlos_fight_gang: {
+                text: "You rush at the gang leader. It's futile. They beat you savagely. You wake up hours later, alone, bloody, and robbed of everything. But the girl escaped in the chaos. Maybe your sacrifice meant something.",
+                choices: [
+                    { text: "Crawl forward, broken but alive", next: 'carlos_beaten', effects: { health: -35, money: -9999, hope: 10 } }
+                ]
+            },
+
+            carlos_beaten: {
+                text: "You have no money, severe injuries, and you're still hundreds of miles from the US. A family from your group comes back for you. They share their meager supplies and help you walk.",
+                choices: [
+                    { text: "Accept their help", next: 'carlos_helped', effects: { health: 15, hope: 30 } }
+                ]
+            },
+
+            carlos_helped: {
+                text: "The family that helped you gets you to Mexico. You travel together for weeks. At the border, they request asylum as a unit - and they include you as family. The lie works.",
+                choices: [
+                    { text: "Enter the US together", next: 'carlos_found_family_ending', effects: {} }
+                ]
+            },
+
+            carlos_found_family_ending: {
+                text: "🌟 ENDING: Found Family\n\n{NAME}, you lost everything on the journey but gained something more valuable: a family. The lie about being related becomes truth over time. You work together, live together, support each other.\n\nYour asylum case is pending, but you're not facing it alone. This is what survival looks like.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_mexico_broke: {
+                text: "In Mexico, you have no money left. You work odd jobs for weeks to earn bus fare. While working at a farm, immigration police raid the fields.",
+                choices: [
+                    { text: "Experience the raid", next: 'carlos_mexico_detention', effects: { health: -15 } }
+                ]
+            },
+
+            carlos_mexico_detention: {
+                text: "DETENTION_SCREEN:Mexican immigration detention is a nightmare. You're locked in with fifty others in a space meant for twenty. Some have been here for months. They beat people who complain. You witness violence, corruption, and despair. After three weeks, an officer offers you a choice: pay $200 to be 'released' or stay indefinitely.|carlos_mexico_bribe",
+                choices: []
+            },
+
+            carlos_mexico_bribe: {
+                text: "You don't have $200. But a cellmate offers to loan it to you - if you agree to carry something across the US border for him when you get there. You know what he's asking. It's drugs. But it might be your only way out.",
+                choices: [
+                    { text: "Accept the deal - compromise your morals to survive", next: 'carlos_drug_deal', effects: { hope: -40, money: 200 } },
+                    { text: "Refuse and stay in detention", next: 'carlos_stay_detention', effects: { health: -25, hope: -15 } },
+                    { text: "Try to escape detention - extremely dangerous", next: 'carlos_escape_detention', effects: { health: -30, hope: 10 } }
+                ]
+            },
+
+            carlos_drug_deal: {
+                text: "You take the deal. The man gets you released. He gives you $200 and a phone number. 'When you cross, call this number. They'll tell you what to pick up and where to deliver it.'\n\nYou've become a drug mule to achieve your dream of America. The irony isn't lost on you.",
+                choices: [
+                    { text: "Continue to the US border", next: 'carlos_mule_journey', effects: { money: 200 } }
+                ]
+            },
+
+            carlos_mule_journey: {
+                text: "You reach the US border and request asylum. You're approved. You're in America. Now comes the hard part - the phone call. If you don't follow through, the cartel will find you. If you do, you become a criminal.",
+                choices: [
+                    { text: "Make the phone call and do the job", next: 'carlos_drug_ending', effects: { hope: -50 } },
+                    { text: "Ignore the deal and go to the police", next: 'carlos_witness_protection', effects: { hope: 20 } },
+                    { text: "Run and hide from both cartel and authorities", next: 'carlos_fugitive_ending', effects: { hope: -30 } }
+                ]
+            },
+
+            carlos_drug_ending: {
+                text: "💔 ENDING: Compromised Dreams\n\n{NAME}, you made it to America, but at what cost? You work for the cartel now, moving packages, living in fear. This isn't the life you imagined. You send money home, but the price is your soul.\n\nMaybe one day you'll find a way out. Maybe.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_witness_protection: {
+                text: "You go to the police and tell them everything. They offer witness protection in exchange for testifying against the cartel. You accept. Your asylum is fast-tracked. You get a new identity, a new city, a new life.\n\nYou can never contact your family again. They can never know where you are.",
+                choices: [
+                    { text: "Accept your new identity", next: 'carlos_protection_ending', effects: {} }
+                ]
+            },
+
+            carlos_protection_ending: {
+                text: "🌟 ENDING: A New Identity\n\n{NAME} - that's not your name anymore. You're someone else now. You live in a midwestern city, working a normal job, living a quiet life. You're safe. You're in America. But you're completely alone.\n\nYou made the right choice. But it still hurts.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_fugitive_ending: {
+                text: "💔 ENDING: Always Running\n\n{NAME}, you're in America but you're not free. The cartel looks for you. The police look for you. You work under the table, live in hiding, trust no one. This is survival, but it's not living.\n\nMaybe eventually you'll find peace. But not today.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_stay_detention: {
+                text: "You refuse the deal and stay in detention. Months pass. Your health deteriorates. Then, a miracle: a nonprofit organization gets you released and helps you get to the US border legally.",
+                choices: [
+                    { text: "Request asylum with legal help", next: 'carlos_legal_asylum', effects: { health: -30, hope: 25 } }
+                ]
+            },
+
+            carlos_legal_asylum: {
+                text: "🌟 ENDING: The Long Road\n\n{NAME}, you did it the hard way - but you did it right. Your asylum is approved. You never compromised your morals, never worked for criminals. You're broken, traumatized, but you're clean.\n\nYou work on a farm in California. It's hard work, but it's honest. You sleep peacefully.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_escape_detention: {
+                text: "You try to escape during a meal. You make it over the fence, but guards catch you. They beat you severely as punishment. You spend two more months in detention before being deported back to Ecuador.\n\nThe journey failed. But you're alive.",
+                choices: [
+                    { text: "Accept deportation", next: 'carlos_deported_ending', effects: {} }
+                ]
+            },
+
+            carlos_deported_ending: {
+                text: "💔 ENDING: Back to Zero\n\n{NAME}, you're back in Ecuador. You spent everything, risked everything, and failed. But you learned something: the journey isn't just about reaching America. It's about discovering what you're willing to sacrifice, what lines you won't cross.\n\nYou'll try again someday. And next time, you'll make it.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_mexico_guilt: {
+                text: "You reach Mexico City carrying the guilt of the girl you didn't save. In a church, you confess to a priest. He tells you: 'We all make choices we regret. But you can still choose to do good from here forward.'\n\nIt helps, a little.",
+                choices: [
+                    { text: "Continue to the US border", next: 'carlos_mexico', effects: { hope: 10 } }
+                ]
+            },
+
+            carlos_mexico: {
+                text: "Mexico is the final stretch. You travel through Chiapas, Oaxaca, all the way to Tijuana. The journey has taken six months. You've lost weight and all your money, but you're here. You can see California from where you stand.",
+                choices: [
+                    { text: "Request asylum at the border", next: 'carlos_asylum', effects: { hope: 15 } }
+                ]
+            },
+
+            carlos_asylum: {
+                text: "You request asylum. Your case is economic hardship - not the strongest claim. But you're honest about your situation. After processing, you're admitted with a court date months away. You find agricultural work immediately.",
+                choices: [
+                    { text: "Begin working and waiting", next: 'carlos_work_ending', effects: {} }
+                ]
+            },
+
+            carlos_work_ending: {
+                text: "🌟 ENDING: The Long Walk\n\n{NAME}, you walked 4,000 miles to get here. Your asylum case is pending, but you're working. The farms here remind you of home. You send money to your family - they'll join you soon, one way or another.\n\nYou've joined a community of other migrants. You help new arrivals find work and navigate the system. The journey was long, but it gave you strength.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            },
+
+            carlos_bus: {
+                text: "You take buses through Colombia, Panama, and into Central America. It's faster than walking but drains your money quickly. By the time you reach Guatemala, you're nearly broke.",
+                choices: [
+                    { text: "Walk the rest of the way", next: 'carlos_mexico', effects: { health: -20 } }
+                ]
+            },
+
+            carlos_wait: {
+                text: "You wait and try to save more money, but the economy only gets worse. After three months, things are even more desperate. You can't wait any longer.",
+                choices: [
+                    { text: "Begin the journey now", next: 'carlos_walk', effects: { hope: 10, money: 50 } }
+                ]
+            },
+
+            // Death ending (health reaches 0)
+            death_ending: {
+                text: "💔 ENDING: The Ultimate Price\n\n{NAME}, your body gave out. The journey was too harsh, the conditions too brutal. You didn't make it.\n\nYour story is one of thousands - people who risked everything for a chance at a better life. You will be remembered by those who loved you. Your courage, even in failure, was real.\n\nThis is the harsh reality many face.\n\nFinal Status:\nMoney: ${MONEY}\nHealth: {HEALTH}%\nHope: {HOPE}%",
+                choices: []
+            }
+        };
+
+        function showScene(sceneId) {
+            const scene = scenes[sceneId];
+            if (!scene) {
+                console.error('Scene not found:', sceneId);
+                return;
+            }
+
+            const storyText = document.getElementById('story-text');
+            const choicesDiv = document.getElementById('choices');
+
+            // Replace dynamic values in text
+            let sceneText = typeof scene.text === 'function' ? scene.text() : scene.text;
+            sceneText = sceneText.replace(/\{MONEY\}/g, gameState.money);
+            sceneText = sceneText.replace(/\{HEALTH\}/g, gameState.health);
+            sceneText = sceneText.replace(/\{HOPE\}/g, gameState.hope);
+            sceneText = sceneText.replace(/\{NAME\}/g, gameState.character ? gameState.character.name : 'Traveler');
+
+            // Check for special screens
+            if (sceneText.startsWith('DETENTION_SCREEN:')) {
+                const parts = sceneText.substring(17).split('|');
+                const detentionText = parts[0];
+                const nextScene = parts[1];
+                showDetention(detentionText, nextScene);
+                return;
+            }
+
+            if (sceneText.startsWith('RANSOM_SCREEN:')) {
+                const parts = sceneText.substring(14).split('|');
+                const ransomText = parts[0];
+                const nextScene = parts[1];
+                showRansom(ransomText, nextScene);
+                return;
+            }
+
+            storyText.textContent = sceneText;
+            choicesDiv.innerHTML = '';
+
+            if (scene.choices.length === 0) {
+                // This is an ending - show continue to statistics
+                const statsButton = document.createElement('button');
+                statsButton.className = 'restart-button';
+                statsButton.textContent = 'See The Reality →';
+                statsButton.onclick = showStatistics;
+                choicesDiv.appendChild(statsButton);
+                return;
+            }
+
+            scene.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'choice-button';
+                button.textContent = choice.text;
+
+                // Check requirements
+                let canChoose = true;
+                if (choice.requirement) {
+                    if (choice.requirement.money && gameState.money < choice.requirement.money) {
+                        canChoose = false;
+                        button.disabled = true;
+                        button.textContent += ' (Need $' + choice.requirement.money + ')';
+                    }
+                    if (choice.requirement.inventory) {
+                        const hasItem = gameState.inventory.find(item => item.id === choice.requirement.inventory);
+                        if (!hasItem) {
+                            canChoose = false;
+                            button.disabled = true;
+                            button.textContent += ' (Need item)';
+                        }
+                    }
+                }
+
+                if (canChoose) {
+                    button.onclick = () => makeChoice(choice);
+                }
+
+                choicesDiv.appendChild(button);
+            });
+        }
+
+        function makeChoice(choice) {
+            gameState.decisions.push(choice.text);
+
+            // Show transition screen
+            showTransition(choice);
+
+            // Apply effects after transition
+            setTimeout(() => {
+                if (choice.effects.money) {
+                    gameState.money = Math.max(0, gameState.money + choice.effects.money);
+                }
+                if (choice.effects.health) {
+                    gameState.health = Math.max(0, Math.min(100, gameState.health + choice.effects.health));
+                }
+                if (choice.effects.hope) {
+                    gameState.hope = Math.max(0, Math.min(100, gameState.hope + choice.effects.hope));
+                }
+
+                updateDisplay();
+
+                // Check if health reached zero
+                if (gameState.health <= 0) {
+                    hideTransition();
+                    showScene('death_ending');
+                    return;
+                }
+
+                gameState.currentScene = choice.next;
+                hideTransition();
+                showScene(choice.next);
+            }, 3000); // 3 second transition
+        }
+
+        function showTransition(choice) {
+            const transitionScreen = document.getElementById('transition-screen');
+            const transitionText = document.getElementById('transition-text');
+            const travelerIcon = document.getElementById('traveler-icon');
+
+            // Set traveler icon based on character
+            if (gameState.character) {
+                travelerIcon.textContent = gameState.character.icon;
+            }
+
+            // Generate transition text based on choice effects
+            let transitions = [];
+
+            if (choice.effects.health && choice.effects.health < -20) {
+                transitions = [
+                    "The journey takes its toll on your body...",
+                    "You push through exhaustion and pain...",
+                    "Your strength fades, but you must continue...",
+                    "The hardship is almost unbearable..."
+                ];
+            } else if (choice.effects.money && choice.effects.money < -100) {
+                transitions = [
+                    "You count your remaining money nervously...",
+                    "Another expense drains your savings...",
+                    "You wonder if you'll have enough..."
+                ];
+            } else if (choice.effects.hope && choice.effects.hope > 10) {
+                transitions = [
+                    "A glimmer of hope brightens your path...",
+                    "You feel stronger, more determined...",
+                    "The dream feels closer now...",
+                    "Your spirits lift as you continue..."
+                ];
+            } else if (choice.effects.hope && choice.effects.hope < -10) {
+                transitions = [
+                    "Doubt creeps into your mind...",
+                    "The weight of the journey grows heavier...",
+                    "You question if you made the right choice...",
+                    "Fear and uncertainty cloud your thoughts..."
+                ];
+            } else {
+                transitions = [
+                    "Days pass as you continue your journey...",
+                    "You travel through unfamiliar lands...",
+                    "Time moves slowly, but you keep going...",
+                    "The road ahead is long and uncertain...",
+                    "You push forward, step by step...",
+                    "Another day, another mile...",
+                    "The journey continues...",
+                    "You rest briefly, then move on...",
+                    "The landscape changes as you travel...",
+                    "Hope and fear walk beside you..."
+                ];
+            }
+
+            transitionText.textContent = transitions[Math.floor(Math.random() * transitions.length)];
+            transitionScreen.style.display = 'flex';
+
+            // Reset animation
+            travelerIcon.style.animation = 'none';
+            setTimeout(() => {
+                travelerIcon.style.animation = 'walk 3s linear forwards';
+            }, 10);
+        }
+
+        function hideTransition() {
+            const transitionScreen = document.getElementById('transition-screen');
+            transitionScreen.classList.add('fade-out');
+            setTimeout(() => {
+                transitionScreen.style.display = 'none';
+                transitionScreen.classList.remove('fade-out');
+            }, 500);
+        }
+
+        // Detention screen functions
+        function showDetention(text, nextScene) {
+            const detentionScreen = document.getElementById('detention-screen');
+            const detainedCharacter = document.getElementById('detained-character');
+            const detentionText = document.getElementById('detention-text');
+            const continueBtn = document.getElementById('detention-continue');
+
+            detainedCharacter.textContent = gameState.character.icon;
+            detentionText.textContent = text;
+            detentionScreen.style.display = 'flex';
+
+            // Store next scene for continue button
+            continueBtn.onclick = () => {
+                hideDetention();
+                setTimeout(() => showScene(nextScene), 500);
+            };
+        }
+
+        function hideDetention() {
+            const detentionScreen = document.getElementById('detention-screen');
+            detentionScreen.classList.add('fade-out');
+            setTimeout(() => {
+                detentionScreen.style.display = 'none';
+                detentionScreen.classList.remove('fade-out');
+            }, 500);
+        }
+
+        // Ransom screen functions
+        function showRansom(text, nextScene) {
+            const ransomScreen = document.getElementById('ransom-screen');
+            const hostageCharacter = document.getElementById('hostage-character');
+            const ransomText = document.getElementById('ransom-text');
+            const continueBtn = document.getElementById('ransom-continue');
+
+            hostageCharacter.textContent = gameState.character.icon;
+            ransomText.textContent = text;
+            ransomScreen.style.display = 'flex';
+
+            // Store next scene for continue button
+            continueBtn.onclick = () => {
+                hideRansom();
+                setTimeout(() => showScene(nextScene), 500);
+            };
+        }
+
+        function hideRansom() {
+            const ransomScreen = document.getElementById('ransom-screen');
+            ransomScreen.classList.add('fade-out');
+            setTimeout(() => {
+                ransomScreen.style.display = 'none';
+                ransomScreen.classList.remove('fade-out');
+            }, 500);
+        }
+
+        function showStatistics() {
+            document.getElementById('game-content').style.display = 'none';
+            document.getElementById('stats-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
